@@ -31,10 +31,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void authenticateUser() {
-        getCurrentFocus().clearFocus();
-        InputMethodManager imm = (InputMethodManager) getSystemService(
-                Activity.INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
         if (TextUtils.isEmpty(etUserName.getText())) {
             Toast.makeText(this, "UserName cannot be empty!!!", Toast.LENGTH_SHORT)
                     .show();

@@ -1,5 +1,6 @@
 package com.example.assignment5;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -9,6 +10,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -25,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView ivBookCover;
     private List<Book> selectedCategory;
     private Button btnSeeMore;
+    ActivityResultLauncher<Intent> launcher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +38,24 @@ public class MainActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("Books");
         }
+
+        launcher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        // There are no request codes
+                        Intent data = result.getData();
+                        if (data != null) {
+                            for (Book book : selectedCategory) {
+                                if (book.getTitle().
+                                        equalsIgnoreCase(data.getStringExtra("TITLE"))) {
+                                    book.setCopiesAvailable(data.getIntExtra("NO_OF_COPIES",
+                                            book.getCopiesAvailable()));
+                                }
+                            }
+                        }
+                    }
+                });
 
         populateData();
         initViews();
@@ -241,6 +263,6 @@ public class MainActivity extends AppCompatActivity {
         bundle.putParcelable("BOOK_DETAILS",
                 selectedCategory.get(spBooks.getSelectedItemPosition()));
         detailsActivity.putExtras(bundle);
-        startActivity(detailsActivity);
+        launcher.launch(detailsActivity);
     }
 }
